@@ -3,9 +3,6 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Earth from './components/Earth';
 import InteractiveStars from './components/InteractiveStars';
-import Moon from './components/Moon';
-import Sun from './components/Sun';
-import OtherPlanets from './components/OtherPlanets';
 import './App.css';
 
 function App() {
@@ -14,10 +11,8 @@ function App() {
       <Canvas camera={{ position: [0, 0, 3] }}>
         <Suspense fallback={null}>
           <ambientLight intensity={0.2} />
+          <directionalLight position={[2, 0, 5]} intensity={3.5} />
           <Earth />
-          <Moon />
-          <Sun />
-          <OtherPlanets />
           <InteractiveStars count={20000} radius={300} depth={60} />
         </Suspense>
         <OrbitControls 
