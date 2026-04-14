@@ -16,25 +16,11 @@ const Earth = () => {
     'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png',
   ]);
 
-  const sunPos = new THREE.Vector3(0, 0, 0); // Sun's new central location
-  const earthWorldPos = new THREE.Vector3();
-
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime();
 
     if (earthRef.current) {
       earthRef.current.rotation.y = elapsedTime / 6;
-
-      // Extract the absolute world position of Earth as it sweeps heavily through its orbit
-      earthRef.current.getWorldPosition(earthWorldPos);
-
-      // Now calculate the vector straight BACK to the sun
-      const dirToSun = sunPos.clone().sub(earthWorldPos).normalize();
-
-      // Give this updated sun direction specifically to the shader
-      if (earthRef.current.userData.shader) {
-        earthRef.current.userData.shader.uniforms.uSunDirection.value.copy(dirToSun);
-      }
     }
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y = elapsedTime / 6;
@@ -52,11 +38,8 @@ const Earth = () => {
           shininess={35}
           specular={new THREE.Color(0x333333)}
           onBeforeCompile={(shader) => {
-            earthRef.current.userData.shader = shader; // Save reference for useFrame tracking
-            
             shader.uniforms.tNight = { value: nightMap };
-            // A placeholder direction that gets heavily updated dynamically below in useFrame
-            shader.uniforms.uSunDirection = { value: new THREE.Vector3(-1, 0, 0).normalize() };
+            shader.uniforms.uSunDirection = { value: new THREE.Vector3(2, 0, 5).normalize() };
 
             // Pass the absolute object-space normal to the fragment shader
             shader.vertexShader = shader.vertexShader.replace(
