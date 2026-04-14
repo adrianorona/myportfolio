@@ -16,11 +16,25 @@ const Earth = () => {
     'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png',
   ]);
 
+  const sunPos = new THREE.Vector3(0, 0, 0); // Sun's new central location
+  const earthWorldPos = new THREE.Vector3();
+
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime();
 
     if (earthRef.current) {
       earthRef.current.rotation.y = elapsedTime / 6;
+
+      // Extract the absolute world position of Earth as it sweeps heavily through its orbit
+      earthRef.current.getWorldPosition(earthWorldPos);
+
+      // Now calculate the vector straight BACK to the sun
+      const dirToSun = sunPos.clone().sub(earthWorldPos).normalize();
+
+      // Give this updated sun direction specifically to the shader
+      if (earthRef.current.userData.shader) {
+        earthRef.current.userData.shader.uniforms.uSunDirection.value.copy(dirToSun);
+      }
     }
     if (cloudsRef.current) {
       cloudsRef.current.rotation.y = elapsedTime / 6;
@@ -38,8 +52,11 @@ const Earth = () => {
           shininess={35}
           specular={new THREE.Color(0x333333)}
           onBeforeCompile={(shader) => {
+            earthRef.current.userData.shader = shader; // Save reference for useFrame tracking
+            
             shader.uniforms.tNight = { value: nightMap };
-            shader.uniforms.uSunDirection = { value: new THREE.Vector3(2, 0, 5).normalize() };
+            // A placeholder direction that gets heavily updated dynamically below in useFrame
+            shader.uniforms.uSunDirection = { value: new THREE.Vector3(-1, 0, 0).normalize() };
 
             // Pass the absolute object-space normal to the fragment shader
             shader.vertexShader = shader.vertexShader.replace(
@@ -72,7 +89,10 @@ const Earth = () => {
               
               // Only sample the red channel to extract true brightness, bypassing ANY purple/blue noise in the map!
               float nightLight = texture2D(tNight, vMapUv).r;
-              vec3 cityLights = vec3(nightLight) * vec3(1.3, 1.0, 0.6); // Warm glowing golden lights
+              // Crush low-intensity grey values to pitch black, leaving only bright actual city lights
+              nightLight = pow(nightLight, 4.0);
+              
+              vec3 cityLights = vec3(nightLight) * vec3(1.3, 1.0, 0.4); // Warm glowing golden lights
               
               // We compare world-space normal against sun direction for perfect fixed-light orientation relative to camera
               float dayIntensity = dot(normalize(vObjectNormal), normalize(uSunDirection));
@@ -80,11 +100,15 @@ const Earth = () => {
               float dayBlend = smoothstep(-0.15, 0.15, dayIntensity);
               float nightBlend = smoothstep(0.1, -0.15, dayIntensity);
               
-              // Force gl_FragColor to perfect solid pitch black over the dark side
-              gl_FragColor.rgb *= dayBlend;
+              // Keep a very dim, cool midnight blue tint of the actual Earth base texture so continents are faintly visible at night 
+              vec3 baseTexture = texture2D(map, vMapUv).rgb;
+              vec3 starlightIllumination = baseTexture * vec3(0.08, 0.12, 0.2); // Extremely dark blue
               
-              // Add city lights directly over the blackened area mathematically 
-              gl_FragColor.rgb += cityLights * nightBlend * 2.5;
+              // Only apply pure black over the dark side if you wanted it fully dead, instead we mix the starlight glow in
+              gl_FragColor.rgb = mix(starlightIllumination, gl_FragColor.rgb, dayBlend);
+              
+              // Add city lights directly over the darkened area
+              gl_FragColor.rgb += cityLights * nightBlend * 8.0;
               `
             );
           }}
