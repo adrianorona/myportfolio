@@ -39,35 +39,52 @@ const Earth = () => {
           specular={new THREE.Color(0x333333)}
           onBeforeCompile={(shader) => {
             shader.uniforms.tNight = { value: nightMap };
+            shader.uniforms.uSunDirection = { value: new THREE.Vector3(2, 0, 5).normalize() };
+
+            // Pass the absolute object-space normal to the fragment shader
+            shader.vertexShader = shader.vertexShader.replace(
+              'void main() {',
+              `
+              varying vec3 vObjectNormal;
+              void main() {
+              `
+            ).replace(
+              '#include <beginnormal_vertex>',
+              `
+              #include <beginnormal_vertex>
+              // Get the actual world-space normal of this rotating mesh, not just plain local 'normal'
+              vObjectNormal = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);
+              `
+            );
+
             shader.fragmentShader = shader.fragmentShader.replace(
               '#include <map_pars_fragment>',
               `
               #include <map_pars_fragment>
               uniform sampler2D tNight;
+              uniform vec3 uSunDirection;
+              varying vec3 vObjectNormal;
               `
             ).replace(
               '#include <dithering_fragment>',
               `
               #include <dithering_fragment>
               
-              vec3 nightColor = texture2D(tNight, vMapUv).rgb;
-              // Make city lights a more realistic warm, glowing yellow-white
-              nightColor *= vec3(1.2, 1.0, 0.6);
+              // Only sample the red channel to extract true brightness, bypassing ANY purple/blue noise in the map!
+              float nightLight = texture2D(tNight, vMapUv).r;
+              vec3 cityLights = vec3(nightLight) * vec3(1.3, 1.0, 0.6); // Warm glowing golden lights
               
-              // Find the lit brightness
-              float luma = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
+              // We compare world-space normal against sun direction for perfect fixed-light orientation relative to camera
+              float dayIntensity = dot(normalize(vObjectNormal), normalize(uSunDirection));
               
-              // Smooth transition into the dark side (twilight zone)
-              float nightBlend = smoothstep(0.25, 0.0, luma);
+              float dayBlend = smoothstep(-0.15, 0.15, dayIntensity);
+              float nightBlend = smoothstep(0.1, -0.15, dayIntensity);
               
-              // Strip out the muddy ambient light on the dark side to make it true space black
-              gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.0), nightBlend);
+              // Force gl_FragColor to perfect solid pitch black over the dark side
+              gl_FragColor.rgb *= dayBlend;
               
-              // Add the city lights back over the perfect black
-              gl_FragColor.rgb += nightColor * nightBlend * 2.0;
-              
-              // Add a tiny bit of vibrancy / saturation to the daylight to make it feel more "alive"
-              gl_FragColor.rgb = mix(vec3(luma), gl_FragColor.rgb, 1.15);
+              // Add city lights directly over the blackened area mathematically 
+              gl_FragColor.rgb += cityLights * nightBlend * 2.5;
               `
             );
           }}
@@ -82,6 +99,38 @@ const Earth = () => {
           blending={THREE.AdditiveBlending}
           depthWrite={false}
           side={THREE.DoubleSide}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uSunDirection = { value: new THREE.Vector3(2, 0, 5).normalize() };
+            shader.vertexShader = shader.vertexShader.replace(
+              'void main() {',
+              `
+              varying vec3 vObjectNormal;
+              void main() {
+              `
+            ).replace(
+              '#include <beginnormal_vertex>',
+              `
+              #include <beginnormal_vertex>
+              vObjectNormal = normalize((modelMatrix * vec4(objectNormal, 0.0)).xyz);
+              `
+            );
+            shader.fragmentShader = shader.fragmentShader.replace(
+              '#include <map_pars_fragment>',
+              `
+              #include <map_pars_fragment>
+              uniform vec3 uSunDirection;
+              varying vec3 vObjectNormal;
+              `
+            ).replace(
+              '#include <dithering_fragment>',
+              `
+              #include <dithering_fragment>
+              float dayIntensity = dot(normalize(vObjectNormal), normalize(uSunDirection));
+              float dayBlend = smoothstep(-0.25, 0.1, dayIntensity);
+              gl_FragColor.rgb *= dayBlend;
+              `
+            );
+          }}
         />
       </mesh>
 
@@ -89,19 +138,27 @@ const Earth = () => {
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[1.1, 64, 64]} />
         <shaderMaterial
+          uniforms={{
+            uSunDirection: { value: new THREE.Vector3(2, 0, 5).normalize() }
+          }}
           vertexShader={`
             varying vec3 vNormal;
+            varying vec3 vObjectNormal;
             void main() {
               vNormal = normalize(normalMatrix * normal);
+              vObjectNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
               gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
             }
           `}
           fragmentShader={`
+            uniform vec3 uSunDirection;
             varying vec3 vNormal;
+            varying vec3 vObjectNormal;
             void main() {
-              // Brighter, more vibrant fresnel glow extending off the edges
+              float dayIntensity = dot(normalize(vObjectNormal), normalize(uSunDirection));
+              float dayBlend = smoothstep(-0.4, 0.15, dayIntensity);
               float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
-              gl_FragColor = vec4(0.15, 0.55, 1.0, 1.0) * intensity * 2.0;
+              gl_FragColor = vec4(0.15, 0.55, 1.0, 1.0) * intensity * 2.0 * dayBlend;
             }
           `}
           blending={THREE.AdditiveBlending}
