@@ -30,11 +30,13 @@ const Earth = () => {
   return (
     <>
       <mesh ref={earthRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[1, 32, 32]} />
+        <sphereGeometry args={[1, 64, 64]} />
         <meshPhongMaterial
           map={colorMap}
           normalMap={normalMap}
           specularMap={specularMap}
+          shininess={35}
+          specular={new THREE.Color(0x333333)}
           onBeforeCompile={(shader) => {
             shader.uniforms.tNight = { value: nightMap };
             shader.fragmentShader = shader.fragmentShader.replace(
@@ -49,39 +51,43 @@ const Earth = () => {
               #include <dithering_fragment>
               
               vec3 nightColor = texture2D(tNight, vMapUv).rgb;
-              // Tint the city lights a bright yellow
-              nightColor *= vec3(1.0, 0.85, 0.3);
+              // Make city lights a more realistic warm, glowing yellow-white
+              nightColor *= vec3(1.2, 1.0, 0.6);
               
-              vec3 dayColor = texture2D(map, vMapUv).rgb;
-              float dayLuma = dot(dayColor, vec3(0.299, 0.587, 0.114));
-              float finalLuma = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
+              // Find the lit brightness
+              float luma = dot(gl_FragColor.rgb, vec3(0.299, 0.587, 0.114));
               
-              // Determine how intensely the surface is lit by comparing the final color brightness to the base color
-              float lightRatio = finalLuma / max(dayLuma, 0.0001);
+              // Smooth transition into the dark side (twilight zone)
+              float nightBlend = smoothstep(0.25, 0.0, luma);
               
-              // Blend the night lights in strictly when the surface loses direct light (twilight threshold)
-              float nightBlend = smoothstep(1.0, 0.5, lightRatio);
+              // Strip out the muddy ambient light on the dark side to make it true space black
+              gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.0), nightBlend);
               
-              gl_FragColor.rgb += nightColor * nightBlend * 2.5;
+              // Add the city lights back over the perfect black
+              gl_FragColor.rgb += nightColor * nightBlend * 2.0;
+              
+              // Add a tiny bit of vibrancy / saturation to the daylight to make it feel more "alive"
+              gl_FragColor.rgb = mix(vec3(luma), gl_FragColor.rgb, 1.15);
               `
             );
           }}
         />
       </mesh>
       <mesh ref={cloudsRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[1.005, 32, 32]} />
+        <sphereGeometry args={[1.005, 64, 64]} />
         <meshPhongMaterial
           map={cloudsMap}
           transparent={true}
-          opacity={0.4}
+          opacity={0.8}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
+          side={THREE.DoubleSide}
         />
       </mesh>
 
       {/* Atmospheric blue glow/ozone layer */}
       <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[1.1, 32, 32]} />
+        <sphereGeometry args={[1.1, 64, 64]} />
         <shaderMaterial
           vertexShader={`
             varying vec3 vNormal;
@@ -93,8 +99,9 @@ const Earth = () => {
           fragmentShader={`
             varying vec3 vNormal;
             void main() {
-              float intensity = pow(0.6 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
-              gl_FragColor = vec4(0.3, 0.6, 1.0, 1.0) * intensity * 1.2;
+              // Brighter, more vibrant fresnel glow extending off the edges
+              float intensity = pow(0.65 - dot(vNormal, vec3(0, 0, 1.0)), 4.0);
+              gl_FragColor = vec4(0.15, 0.55, 1.0, 1.0) * intensity * 2.0;
             }
           `}
           blending={THREE.AdditiveBlending}

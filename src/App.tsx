@@ -9,8 +9,8 @@ function App() {
     <div className="canvas-container">
       <Canvas camera={{ position: [0, 0, 3] }}>
         <Suspense fallback={null}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[2, 0, 5]} intensity={1.5} />
+          <ambientLight intensity={0.1} />
+          <directionalLight position={[2, 0, 5]} intensity={3.5} />
           <Earth />
           <Stars 
             radius={300} 
