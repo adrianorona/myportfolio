@@ -6,11 +6,13 @@ import InteractiveStars from './components/InteractiveStars';
 import Moon from './components/Moon';
 import Sun from './components/Sun';
 import OtherPlanets from './components/OtherPlanets';
+import Navbar from './components/Navbar';
 import './App.css';
 
 function App() {
   return (
     <div className="canvas-container">
+      <Navbar />
       <Canvas camera={{ position: [0, 0, 3] }}>
         <Suspense fallback={null}>
           <ambientLight intensity={0.2} />
