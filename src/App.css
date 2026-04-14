@@ -4,6 +4,49 @@
     background-color: #000;
 }
 
+/* Home Page Social Buttons placed under Earth */
+.hero-actions {
+  display: flex;
+  gap: 20px;
+}
+
+.social-btn, .social-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(38, 41, 55, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.social-btn {
+  gap: 12px;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.social-icon-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.social-btn:hover, .social-icon-btn:hover {
+  background: rgba(48, 52, 68, 0.95);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
 .top-section {
     position: absolute;
     width: 100%;

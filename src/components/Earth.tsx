@@ -3,7 +3,7 @@ import { useFrame, useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
 import { TextureLoader } from 'three';
 
-const Earth = () => {
+export default function Earth() {
   const earthRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
 
@@ -176,6 +176,4 @@ const Earth = () => {
       </mesh>
     </>
   );
-};
-
-export default Earth;
+}

@@ -25,7 +25,7 @@ export default function Moon() {
 
   return (
     <group ref={moonGroupRef}>
-      <mesh ref={moonMeshRef} position={[4, 0, 0]}>
+      <mesh name="Moon" ref={moonMeshRef} position={[4, 0, 0]}>
         <sphereGeometry args={[0.27, 32, 32]} />
         <meshStandardMaterial 
           map={moonTexture} 

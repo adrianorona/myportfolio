@@ -46,7 +46,7 @@ function DetailedPlanet({ data }: { data: PlanetData }) {
   return (
     <group position={[data.distance, 0, 0]}>
       {/* The main planet sphere */}
-      <mesh ref={planetMeshRef}>
+      <mesh name={`Planet-${data.name}`} ref={planetMeshRef}>
         <sphereGeometry args={[data.size, 64, 64]} />
         <meshStandardMaterial 
           map={texture} 
