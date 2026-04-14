@@ -1,11 +1,66 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { useScroll } from '@react-three/drei';
 import * as THREE from 'three';
+import { useEffect, useRef } from 'react';
 
 export default function CameraRig() {
   const scroll = useScroll();
   const { scene } = useThree();
   
+  // Orbital Camera controls for [R] key
+  const isRPressed = useRef(false);
+  const isDragging = useRef(false);
+  const orbitAngle = useRef({ x: 0, y: 0 }); // X represents longitude (left/right around Y axis), Y represents latitude (up/down around X axis)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'r') isRPressed.current = true;
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'r') {
+        isRPressed.current = false;
+        isDragging.current = false;
+      }
+    };
+    const handlePointerDown = (e: PointerEvent) => {
+      if (isRPressed.current) {
+        isDragging.current = true;
+        e.stopPropagation();
+      }
+    };
+    const handlePointerUp = () => {
+      isDragging.current = false;
+    };
+    const handlePointerMove = (e: PointerEvent) => {
+      if (isDragging.current && isRPressed.current) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Using movementX/movementY directly for smooth delta dragging
+        orbitAngle.current.x -= e.movementX * 0.005;
+        orbitAngle.current.y -= e.movementY * 0.005;
+        
+        // Clamp latitude so we don't accidentally do backflips (flip the camera upside down)
+        const maxLat = Math.PI / 2 - 0.1;
+        orbitAngle.current.y = Math.max(-maxLat, Math.min(maxLat, orbitAngle.current.y));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    // Use capture phase so we can grab the events BEFORE ScrollControls does
+    window.addEventListener('pointerdown', handlePointerDown, { capture: true });
+    window.addEventListener('pointerup', handlePointerUp, { capture: true });
+    window.addEventListener('pointermove', handlePointerMove, { capture: true, passive: false });
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('pointerdown', handlePointerDown, { capture: true } as any);
+      window.removeEventListener('pointerup', handlePointerUp, { capture: true } as any);
+      window.removeEventListener('pointermove', handlePointerMove, { capture: true } as any);
+    };
+  }, []);
+
   // Reusable vectors for calculating dynamic world positions
   const earthPos = new THREE.Vector3(0, 0, 0);
   const moonWorldPos = new THREE.Vector3();
@@ -73,6 +128,26 @@ export default function CameraRig() {
       targetPos.lerpVectors(midPos3, endPos, t);
       // Pan to look back at the entire solar system center
       targetLook.lerpVectors(lookMid3, lookEnd, t);
+    }
+    
+    // Apply Orbital Mouse Offset ONLY when looking at the Earth (Home Page)!
+    // If they scroll down to ANY other planet, slowly reset the spin and disable it.
+    if (offset > 0.05) {
+      orbitAngle.current.x = THREE.MathUtils.lerp(orbitAngle.current.x, 0, 0.05);
+      orbitAngle.current.y = THREE.MathUtils.lerp(orbitAngle.current.y, 0, 0.05);
+    } else if (!isRPressed.current) {
+      // Smoothly reset the user's manual orbital rotation when the 'R' key is released
+      orbitAngle.current.x = THREE.MathUtils.lerp(orbitAngle.current.x, 0, 0.05);
+      orbitAngle.current.y = THREE.MathUtils.lerp(orbitAngle.current.y, 0, 0.05);
+    }
+    
+    // Only apply the mathematical euler spin if we are safely at Home (offset <= 0.05)
+    // Applying it on other planets was breaking the axis vectors and causing extreme zooming!
+    if (offset <= 0.05) {
+      const camOffset = targetPos.clone().sub(targetLook);
+      const orbitalEuler = new THREE.Euler(orbitAngle.current.y, orbitAngle.current.x, 0, 'YXZ');
+      camOffset.applyEuler(orbitalEuler);
+      targetPos.copy(targetLook).add(camOffset);
     }
     
     // Smoothly animate the camera to the target position

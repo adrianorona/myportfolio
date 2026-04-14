@@ -95,6 +95,27 @@ function App() {
         </div>
       </div>
 
+      {/* Rotation Indicator Overlay */}
+      <div style={{
+        position: 'fixed',
+        bottom: '2rem',
+        right: '3rem',
+        pointerEvents: 'none',
+        zIndex: 10,
+        opacity: activeSection !== 'Contact' ? 0.8 : 0,
+        transform: activeSection !== 'Contact' ? 'translateX(0)' : 'translateX(20px)',
+        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        color: 'white',
+        fontFamily: 'monospace',
+        fontSize: '1.2rem',
+        fontWeight: 'bold',
+        letterSpacing: '2px',
+        textShadow: '-2px 0px 0px #00aaff, 2px 0px 0px #ff0055',
+        userSelect: 'none'
+      }}>
+        [R]
+      </div>
+
       <Canvas camera={{ position: [0, 0, 3] }}>
         <Suspense fallback={null}>
           <ScrollControls pages={5} damping={0.25}>
