@@ -141,36 +141,63 @@ function App() {
               </div>
 
               {/* About Page (Offset 0.25) */}
-              <div id="about" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '10vw', alignItems: 'flex-end', textAlign: 'right' }}>
-                <h2 style={{ fontSize: '3rem', fontWeight: 'bold' }}>About Me</h2>
-                <p style={{ fontSize: '1.2rem', color: '#cbd5e1', maxWidth: '400px' }}>
-                  I build immersive internet experiences. As you scroll, the entire cosmos follows. Watch the camera smoothly pan behind the Earth.
-                </p>
+              <div id="about" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '5vw', alignItems: 'flex-end' }}>
+                <div className="glass-panel about-panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '800px', lineHeight: '1.8' }}>
+                  <img src="/profile.jpg" alt="Colston" className="profile-pic" style={{ marginBottom: '20px' }} />
+                  <h2 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '20px' }}>About Me</h2>
+                  
+                  <div className="section-text" style={{ fontSize: '1rem', textAlign: 'justify', textIndent: '2rem' }}>
+                    <p style={{ textIndent: '0', textAlign: 'center', marginBottom: '15px' }}>
+                      Hello, I'm Colston 👋. <em>A Computer Science Student</em> 📖 / <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>React & Android Developer</span> 👨‍💻.
+                    </p>
+                    <p style={{ marginBottom: '15px' }}>
+                      My journey as an aspiring developer began at a very young age, during my first year of junior high school, where I learned to write simple scripts using Visual Basic. <em>In my senior years of high school</em>, I started taking programming seriously and became a self-taught Web Developer.
+                    </p>
+                    <p style={{ marginBottom: '15px' }}>
+                      I also tried Game Development, but eventually, I got really into creating mobile apps, which became my primary area of expertise. I am proficient with technologies such as <strong>React, Next.js, React Native, Expo, Firebase, and Laravel</strong>. I am currently seeking for internships or full-time positions.
+                    </p>
+                    <p>
+                      <em>When I'm not coding</em>, I enjoy playing video games, watching movies, and going out for long walks. I also enjoy learning new things. I am currently learning about <strong>Machine Learning, Data Science, and Cybersecurity through CTF challenges</strong>.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Skills Page (Offset 0.50) */}
-              <div id="skills" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '10vw' }}>
-                <h2 style={{ fontSize: '3rem', fontWeight: 'bold' }}>Skills</h2>
-                <p style={{ fontSize: '1.2rem', color: '#cbd5e1', maxWidth: '400px' }}>
-                  React, Three.js, WebGL, UI/UX Motion Design. As we navigate the void, my technical toolkit helps keep the rendering smooth and visually appealing.
-                </p>
+              <div id="skills" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '10vw', alignItems: 'flex-start', textAlign: 'left' }}>
+                <div className="glass-panel">
+                  <h2 className="section-title">Skills</h2>
+                  <div className="title-underline" style={{ marginLeft: 0 }}></div>
+                  <p className="section-text">
+                    React.js <br/>
+                    Three.js / WebGL <br/>
+                    UI/UX Motion Design <br/><br/>
+                    As we navigate the void, my technical toolkit helps keep the rendering smooth and visually appealing.
+                  </p>
+                </div>
               </div>
               
               {/* Projects Page (Offset 0.75) */}
               <div id="projects" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '10vw', alignItems: 'flex-end', textAlign: 'right' }}>
-                <h2 style={{ fontSize: '3rem', fontWeight: 'bold' }}>Projects</h2>
-                <p style={{ fontSize: '1.2rem', color: '#cbd5e1', maxWidth: '400px' }}>
-                  Notice how we're now swooping off to the right side of the cosmic plane, leaving Earth behind and turning our gaze toward the Sun!
-                </p>
+                <div className="glass-panel">
+                  <h2 className="section-title">Projects</h2>
+                  <div className="title-underline"></div>
+                  <p className="section-text">
+                    Notice how we're now swooping off to the right side of the cosmic plane, leaving Earth behind and turning our gaze toward the Sun!
+                  </p>
+                </div>
               </div>
               
               {/* Contact Page (Offset 1.0) */}
               <div id="contact" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                <h2 style={{ fontSize: '4rem', fontWeight: 'bold', textShadow: '0px 0px 20px #ffaa00' }}>Contact</h2>
-                <p style={{ fontSize: '1.2rem', color: '#cbd5e1', maxWidth: '400px' }}>
-                  We have successfully arrived at the center of our solar system. <br/><br/>
-                  Reach me anytime!
-                </p>
+                <div className="glass-panel contact-panel">
+                  <h2 className="section-title" style={{ fontSize: '4rem', textShadow: '0px 0px 20px #ffaa00' }}>Contact</h2>
+                  <div className="title-underline" style={{ margin: '0 auto' }}></div>
+                  <p className="section-text">
+                    We have successfully arrived at the center of our solar system. <br/><br/>
+                    Reach me anytime!
+                  </p>
+                </div>
               </div>
             </Scroll>
           </ScrollControls>

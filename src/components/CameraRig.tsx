@@ -88,8 +88,8 @@ export default function CameraRig() {
     // Dynamic Waypoints for the camera's position in space based on planet world coordinates
     const startPos = new THREE.Vector3(0, 0, 3.5);             // Home: looking at Earth
     
-    // About: move extremely close to the Moon, looking directly at its surface
-    const midPos1 = moonWorldPos.clone().add(new THREE.Vector3(0, 0.1, 0.8)); 
+    // About: move extremely close to the Moon, look at its surface. We offset it by X (1.5) so the Moon sits on the left side!
+    const midPos1 = moonWorldPos.clone().add(new THREE.Vector3(1.5, 0.1, 1.2)); 
     
     // Skills: Zooming in on Saturn and its majestic rings!
     // Saturn is large (radius ~9.5), so we position the camera slightly further back
@@ -103,7 +103,7 @@ export default function CameraRig() {
     
     // Waypoints for where the camera is LOOKING
     const lookStart = earthPos.clone();              // Look at Earth
-    const lookMid1 = moonWorldPos.clone();           // Look at Moon 
+    const lookMid1 = moonWorldPos.clone().add(new THREE.Vector3(1.2, 0, 0)); // Look slightly to the right of the Moon so it's framed on the left
     const lookMid2 = saturnWorldPos.clone();         // Look at Saturn
     const lookMid3 = marsWorldPos.clone();           // Look at Mars
     const lookEnd = sunPos.clone();                  // Look straight down at the Sun/Solar system center
