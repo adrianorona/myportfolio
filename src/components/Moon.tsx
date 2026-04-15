@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
+import Astronaut from './Astronaut';
 
 export default function Moon() {
   const moonGroupRef = useRef<THREE.Group>(null);
@@ -12,7 +13,7 @@ export default function Moon() {
     'https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1024.jpg'
   ]);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (moonGroupRef.current) {
       // Orbit around the Earth
       moonGroupRef.current.rotation.y += delta * 0.1;
@@ -32,6 +33,8 @@ export default function Moon() {
           roughness={1} 
           metalness={0} 
         />
+        {/* Adorable little astronaut floating near the moon! */}
+        <Astronaut />
       </mesh>
     </group>
   );

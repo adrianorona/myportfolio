@@ -6,6 +6,7 @@ import InteractiveStars from './components/InteractiveStars';
 import Moon from './components/Moon';
 import Sun from './components/Sun';
 import OtherPlanets from './components/OtherPlanets';
+import Asteroid from './components/Asteroid';
 import Navbar from './components/Navbar';
 import CameraRig from './components/CameraRig';
 import './App.css';
@@ -128,6 +129,24 @@ function App() {
             <Moon />
             <Sun />
             <OtherPlanets />
+
+            {/* Create a massive floating asteroid field through the solar system! */}
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+            <Asteroid />
+
             <InteractiveStars count={20000} radius={300} depth={60} />
             
             {/* This custom rig takes control of the camera and ties it to your mouse scroll! */}
@@ -142,22 +161,19 @@ function App() {
 
               {/* About Page (Offset 0.25) */}
               <div id="about" style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '5vw', alignItems: 'flex-end' }}>
-                <div className="glass-panel about-panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '800px', lineHeight: '1.8' }}>
-                  <img src="/profile.jpg" alt="Colston" className="profile-pic" style={{ marginBottom: '20px' }} />
+                <div className="glass-panel about-panel" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: '650px', lineHeight: '1.8' }}>
+                  <img src="/profile.jpg" alt="Adrian" className="profile-pic" style={{ marginBottom: '20px' }} />
                   <h2 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '20px' }}>About Me</h2>
                   
-                  <div className="section-text" style={{ fontSize: '1rem', textAlign: 'justify', textIndent: '2rem' }}>
-                    <p style={{ textIndent: '0', textAlign: 'center', marginBottom: '15px' }}>
-                      Hello, I'm Colston 👋. <em>A Computer Science Student</em> 📖 / <span style={{ textDecoration: 'underline', cursor: 'pointer' }}>React & Android Developer</span> 👨‍💻.
+                  <div className="section-text" style={{ fontSize: '1.1rem', textAlign: 'center' }}>
+                    <p style={{ marginBottom: '20px' }}>
+                      Hello There! I'm Adrian, an aspiring Data Scientist / Data Analyst. I'm passionate about transforming raw data into meaningful insights and building data-driven solutions.
                     </p>
-                    <p style={{ marginBottom: '15px' }}>
-                      My journey as an aspiring developer began at a very young age, during my first year of junior high school, where I learned to write simple scripts using Visual Basic. <em>In my senior years of high school</em>, I started taking programming seriously and became a self-taught Web Developer.
-                    </p>
-                    <p style={{ marginBottom: '15px' }}>
-                      I also tried Game Development, but eventually, I got really into creating mobile apps, which became my primary area of expertise. I am proficient with technologies such as <strong>React, Next.js, React Native, Expo, Firebase, and Laravel</strong>. I am currently seeking for internships or full-time positions.
+                    <p style={{ marginBottom: '20px' }}>
+                      Currently, I am expanding my knowledge in machine learning, data visualization, and statistical analysis, continuously learning new tools and techniques to strengthen my analytical skills and technical expertise.
                     </p>
                     <p>
-                      <em>When I'm not coding</em>, I enjoy playing video games, watching movies, and going out for long walks. I also enjoy learning new things. I am currently learning about <strong>Machine Learning, Data Science, and Cybersecurity through CTF challenges</strong>.
+                      Outside of working with data, I enjoy cycling and playing online games. Cycling helps me stay active and focused, while gaming allows me to relax and develop problem-solving and strategic thinking skills.
                     </p>
                   </div>
                 </div>

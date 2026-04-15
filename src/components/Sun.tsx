@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
 import { Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 

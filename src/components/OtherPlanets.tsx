@@ -37,7 +37,7 @@ function DetailedPlanet({ data }: { data: PlanetData }) {
   const ringTexture = useTexture(data.ringMap ? BASE_URL + data.ringMap : BASE_URL + data.textureMap);
 
   // Slowly rotate the planet on its own axis
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (planetMeshRef.current) {
       planetMeshRef.current.rotation.y += delta * 0.5;
     }
@@ -81,7 +81,7 @@ function DetailedPlanet({ data }: { data: PlanetData }) {
 export default function OtherPlanets() {
   const orbitsRef = useRef<THREE.Group>(null);
   
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (!orbitsRef.current) return;
     
     orbitsRef.current.children.forEach((orbitGroup, i) => {
